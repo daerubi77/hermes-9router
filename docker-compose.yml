@@ -1,0 +1,37 @@
+services:
+  9router:
+    image: decolua/9router:latest
+    restart: unless-stopped
+    ports:
+      - "${NINE_ROUTER_PORT:-20128}:20128"
+    environment:
+      DATA_DIR: /app/data
+      PORT: "20128"
+      HOSTNAME: 0.0.0.0
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      INITIAL_PASSWORD: ${INITIAL_PASSWORD:?Set INITIAL_PASSWORD in .env}
+      API_KEY_SECRET: ${API_KEY_SECRET:?Set API_KEY_SECRET in .env}
+      MACHINE_ID_SALT: ${MACHINE_ID_SALT:?Set MACHINE_ID_SALT in .env}
+      REQUIRE_API_KEY: "true"
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+    volumes:
+      - nine_router_data:/app/data
+
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    restart: unless-stopped
+    command: ["gateway", "run"]
+    depends_on:
+      - 9router
+    environment:
+      HERMES_UID: "10000"
+      HERMES_GID: "10000"
+      NINE_ROUTER_API_KEY: ${NINE_ROUTER_API_KEY:?Set NINE_ROUTER_API_KEY in .env}
+    volumes:
+      - hermes_data:/opt/data
+      - ./hermes-skills/syadagentic-safe:/opt/data/skills/syadagentic-safe:ro
+
+volumes:
+  nine_router_data:
+  hermes_data:
