@@ -4,6 +4,42 @@ Stack Docker Compose untuk menjalankan Hermes Agent dengan 9Router sebagai
 gateway model OpenAI-compatible. Hermes mengirim permintaan ke 9Router melalui
 network internal Compose; dashboard 9Router tetap dapat dibuka dari browser.
 
+## Mulai cepat
+
+Prasyarat: Docker Engine/Desktop dengan Compose v2 dan Python 3.8+.
+
+```sh
+./wizard.py
+```
+
+Wizard memandu pembuatan konfigurasi, menjalankan 9Router terlebih dahulu,
+meminta endpoint API key dan ID model, mengatur Hermes, lalu menjalankan stack.
+Password awal diminta dengan input tersembunyi; secret lain dibuat otomatis dan
+`.env` dibatasi ke permission user (`0600` pada sistem POSIX). Wizard tidak
+mencetak API key ke layar.
+
+Perintah lain:
+
+```sh
+./wizard.py --help             # bantuan CLI
+./wizard.py --check             # validasi Docker dan .env tanpa deploy
+docker compose ps              # status container
+docker compose logs -f hermes  # log Hermes
+docker compose down            # hentikan container, volume data tetap ada
+```
+
+Untuk update, jalankan `docker compose pull && docker compose up -d`. Backup
+data sebelum update penting; lihat [panduan operasi](docs/wiki.md#operasi).
+
+## Dokumentasi
+
+- [Arsitektur](docs/architecture.md): services, network, port, secret, dan data.
+- [Cara kerja](docs/how-it-works.md): urutan wizard, request model, lifecycle.
+- [Wiki / indeks panduan](docs/wiki.md): deployment lokal, platform, Kaggle,
+	operasi, konfigurasi, dan batasan.
+- [Bantuan & troubleshooting](docs/troubleshooting.md): masalah umum dan
+	langkah diagnosis.
+
 Upstream: [Hermes Agent](https://github.com/NousResearch/hermes-agent) ·
 [9Router](https://github.com/decolua/9router) ·
 [Syadagentic](https://github.com/Sekolah76/syadagentic)
@@ -42,7 +78,7 @@ Kaggle ke jaringan publik.
 
 ## Jalankan dengan Docker Compose
 
-Prasyarat: Docker Engine dan Docker Compose v2.
+Jika tidak memakai wizard, prasyaratnya tetap Docker Engine dan Docker Compose v2.
 
 1. Salin `.env.example` menjadi `.env`, lalu ganti semua nilai `replace-...`
 	 dengan nilai rahasia unik.
